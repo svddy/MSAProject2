@@ -12,14 +12,15 @@ SPEED = 100
 MSG_TXT = '{{"speed": {speed}}}'
 
 # Establish client connection with IoT Hub.
-def iothub_client_init():
+def iothub_client_connect():
     client = IoTHubDeviceClient.create_from_connection_string(CONNECTION_STRING)
     return client
 
-def iothub_client_telemetry_sample_run():
+# Define data transferral to IoT Hub.
+def iothub_client_transfer():
 
     try:
-        client = iothub_client_init()
+        client = iothub_client_connect()
         print ( "Connection established with IoT Hub. Vehicle speeds are now being monitored." )
 
         while True:
@@ -37,11 +38,14 @@ def iothub_client_telemetry_sample_run():
 
             print( "Speed Detected: {}".format(message) )
             client.send_message(message)
-            time.sleep(random.uniform(0.2, 6.0))
+            if speed > 108:
+              print ( "ALERT: Speeding!" )
+            # Random interval to simulate realistic gap between camera readings.
+            time.sleep(random.uniform(0.2, 12.0))
 
     except KeyboardInterrupt:
         print ( "Communication halted with IoT Hub. (User Input)" )
 
 if __name__ == '__main__':
     print ( "Speed Camera #1 Simulation" )
-    iothub_client_telemetry_sample_run()
+    iothub_client_transfer()
